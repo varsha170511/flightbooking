@@ -1,0 +1,177 @@
+{% extends "base.html" %}
+
+{% block title %}Flight Details | SkyWings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Flight Summary -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h4 class="mb-0">Flight Details</h4>
+                </div>
+                <div class="card-body">
+                    <div class="flight-summary">
+                        <div class="d-flex justify-content-between align-items-center mb-4">
+                            <div>
+                                <h2 class="mb-1">{{ flight.origin }} to {{ flight.destination }}</h2>
+                                <p class="text-muted mb-0">
+                                    {{ flight.departure_date }} • 
+                                    {{ flight.passengers|default(1) }} passenger{% if flight.passengers|default(1) > 1 %}s{% endif %} • 
+                                    {{ flight.flight_class|default('economy')|capitalize }}
+                                </p>
+                            </div>
+                            <div class="text-end">
+                                <h3 class="text-primary mb-0">${{ flight.price }}</h3>
+                                <p class="text-muted small mb-0">per passenger</p>
+                            </div>
+                        </div>
+                        
+                        <!-- Outbound Flight -->
+                        <div class="flight-segment mb-4">
+                            <div class="segment-header d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">Outbound Flight</h5>
+                                <span class="badge bg-primary">{{ flight.duration }}</span>
+                            </div>
+                            <div class="segment-details">
+                                <div class="row">
+                                    <div class="col-md-2 text-center">
+                                        <img src="{{ url_for('static', filename='images/airlines/' + flight.airline_logo) }}" alt="{{ flight.airline }}" class="img-fluid" style="max-height: 30px;">
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="mb-0">{{ flight.departure_time }}</h5>
+                                        <p class="text-muted small mb-0">{{ flight.origin_code }}</p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <p class="text-muted small mb-0">{{ flight.duration }}</p>
+                                        <div class="flight-line-horizontal mx-auto">
+                                            <span class="flight-dot"></span>
+                                            <span class="flight-line-middle"></span>
+                                            <span class="flight-dot"></span>
+                                        </div>
+                                        <p class="text-muted small mb-0">
+                                            {% if flight.stops == 0 %}
+                                            Non-stop
+                                            {% else %}
+                                            {{ flight.stops }} stop{% if flight.stops > 1 %}s{% endif %}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="mb-0">{{ flight.arrival_time }}</h5>
+                                        <p class="text-muted small mb-0">{{ flight.destination_code }}</p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <p class="mb-0">{{ flight.airline }}</p>
+                                        <p class="text-muted small mb-0">{{ flight.flight_number }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <!-- Return Flight (if applicable) -->
+                        {% if flight.return_flight %}
+                        <div class="flight-segment">
+                            <div class="segment-header d-flex justify-content-between mb-3">
+                                <h5 class="mb-0">Return Flight</h5>
+                                <span class="badge bg-primary">{{ flight.return_flight.duration }}</span>
+                            </div>
+                            <div class="segment-details">
+                                <div class="row">
+                                    <div class="col-md-2 text-center">
+                                        <img src="{{ url_for('static', filename='images/airlines/' + flight.return_flight.airline_logo) }}" alt="{{ flight.return_flight.airline }}" class="img-fluid" style="max-height: 30px;">
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="mb-0">{{ flight.return_flight.departure_time }}</h5>
+                                        <p class="text-muted small mb-0">{{ flight.return_flight.origin_code }}</p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <p class="text-muted small mb-0">{{ flight.return_flight.duration }}</p>
+                                        <div class="flight-line-horizontal mx-auto">
+                                            <span class="flight-dot"></span>
+                                            <span class="flight-line-middle"></span>
+                                            <span class="flight-dot"></span>
+                                        </div>
+                                        <p class="text-muted small mb-0">
+                                            {% if flight.return_flight.stops == 0 %}
+                                            Non-stop
+                                            {% else %}
+                                            {{ flight.return_flight.stops }} stop{% if flight.return_flight.stops > 1 %}s{% endif %}
+                                            {% endif %}
+                                        </p>
+                                    </div>
+                                    <div class="col-md-3 text-center">
+                                        <h5 class="mb-0">{{ flight.return_flight.arrival_time }}</h5>
+                                        <p class="text-muted small mb-0">{{ flight.return_flight.destination_code }}</p>
+                                    </div>
+                                    <div class="col-md-2 text-center">
+                                        <p class="mb-0">{{ flight.return_flight.airline }}</p>
+                                        <p class="text-muted small mb-0">{{ flight.return_flight.flight_number }}</p>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Booking Action -->
+            <div class="text-center mt-4">
+                <a href="{{ url_for('booking', flight_id=flight.id, passengers=flight.passengers, class=flight.flight_class) }}" 
+                   class="btn btn-primary btn-lg">
+                    Book Now for ${{ flight.price * flight.passengers }}
+                </a>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Price Breakdown -->
+            <div class="card mb-4">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Price Breakdown</h5>
+                </div>
+                <div class="card-body">
+                    <div class="price-details">
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Base Fare (x{{ flight.passengers }})</span>
+                            <span>${{ flight.base_price * flight.passengers }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Taxes & Fees (x{{ flight.passengers }})</span>
+                            <span>${{ flight.taxes * flight.passengers }}</span>
+                        </div>
+                        <div class="d-flex justify-content-between mb-2">
+                            <span>Service Fee</span>
+                            <span>${{ flight.service_fee }}</span>
+                        </div>
+                        <hr>
+                        <div class="d-flex justify-content-between fw-bold">
+                            <span>Total</span>
+                            <span>${{ flight.price * flight.passengers }}</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Flight Policies -->
+            <div class="card">
+                <div class="card-header bg-light">
+                    <h5 class="mb-0">Flight Policies</h5>
+                </div>
+                <div class="card-body">
+                    <h6>Baggage Allowance</h6>
+                    <ul class="small">
+                        <li>{{ flight.checked_baggage }} checked bag(s) included</li>
+                        <li>1 carry-on + 1 personal item</li>
+                    </ul>
+                    
+                    <h6 class="mt-3">Cancellation Policy</h6>
+                    <p class="small">Free cancellation within 24 hours of booking</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

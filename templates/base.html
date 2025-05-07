@@ -1,0 +1,272 @@
+{% extends "base.html" %}
+
+{% block title %}Payment | SkyWings{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/payment.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Booking Progress -->
+            <div class="booking-progress mb-5">
+                <div class="progress" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 66%;"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="step completed">
+                        <span class="step-number">1</span>
+                        <span class="step-title">Traveler Details</span>
+                    </div>
+                    <div class="step active">
+                        <span class="step-number">2</span>
+                        <span class="step-title">Payment</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <span class="step-title">Confirmation</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="mb-4">Payment Information</h2>
+            
+            <!-- Payment Form -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Credit/Debit Card</h5>
+                </div>
+                <div class="card-body">
+                    <form id="paymentForm" action="{{ url_for('process_payment') }}" method="POST">
+                        <div class="row g-3">
+                            <div class="col-12">
+                                <label for="cardNumber" class="form-label">Card Number</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="cardNumber" placeholder="1234 5678 9012 3456" required>
+                                    <span class="input-group-text">
+                                        <i class="fab fa-cc-visa fa-lg me-2"></i>
+                                        <i class="fab fa-cc-mastercard fa-lg me-2"></i>
+                                        <i class="fab fa-cc-amex fa-lg"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="cardName" class="form-label">Name on Card</label>
+                                <input type="text" class="form-control" id="cardName" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="cardExpiry" class="form-label">Expiry Date</label>
+                                <input type="text" class="form-control" id="cardExpiry" placeholder="MM/YY" required>
+                            </div>
+                            <div class="col-md-3">
+                                <label for="cardCvv" class="form-label">CVV</label>
+                                <div class="input-group">
+                                    <input type="text" class="form-control" id="cardCvv" required>
+                                    <span class="input-group-text" data-bs-toggle="tooltip" title="3-digit code on back of card">
+                                        <i class="fas fa-question-circle"></i>
+                                    </span>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="saveCard">
+                                    <label class="form-check-label" for="saveCard">
+                                        Save this card for future payments
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Billing Address -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Billing Address</h5>
+                </div>
+                <div class="card-body">
+                    <div class="form-check mb-3">
+                        <input class="form-check-input" type="checkbox" id="sameAsContact" checked>
+                        <label class="form-check-label" for="sameAsContact">
+                            Same as contact information
+                        </label>
+                    </div>
+                    
+                    <div id="billingAddressForm" style="display: none;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="billingFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="billingFirstName">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="billingLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="billingLastName">
+                            </div>
+                            <div class="col-12">
+                                <label for="billingAddress" class="form-label">Address</label>
+                                <input type="text" class="form-control" id="billingAddress">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billingCity" class="form-label">City</label>
+                                <input type="text" class="form-control" id="billingCity">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billingState" class="form-label">State/Province</label>
+                                <input type="text" class="form-control" id="billingState">
+                            </div>
+                            <div class="col-md-4">
+                                <label for="billingZip" class="form-label">ZIP/Postal Code</label>
+                                <input type="text" class="form-control" id="billingZip">
+                            </div>
+                            <div class="col-md-12">
+                                <label for="billingCountry" class="form-label">Country</label>
+                                <select class="form-select" id="billingCountry">
+                                    <option value="us">United States</option>
+                                    <option value="uk">United Kingdom</option>
+                                    <!-- More countries... -->
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Terms and Conditions -->
+            <div class="card mb-4">
+                <div class="card-body">
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="termsAgree" required>
+                        <label class="form-check-label" for="termsAgree">
+                            I agree to the <a href="#" data-bs-toggle="modal" data-bs-target="#termsModal">Terms and Conditions</a> and <a href="#" data-bs-toggle="modal" data-bs-target="#privacyModal">Privacy Policy</a>
+                        </label>
+                    </div>
+                    <div class="form-check">
+                        <input class="form-check-input" type="checkbox" id="fareRulesAgree" required>
+                        <label class="form-check-label" for="fareRulesAgree">
+                            I have read and accept the <a href="#" data-bs-toggle="modal" data-bs-target="#fareRulesModal">Fare Rules</a>
+                        </label>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('booking', flight_id=flight.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Traveler Details
+                </a>
+                <button type="submit" form="paymentForm" class="btn btn-primary">
+                    Complete Booking <i class="fas fa-arrow-right ms-2"></i>
+                </button>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Booking Summary -->
+            <div class="card mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Booking Summary</h5>
+                </div>
+                <div class="card-body">
+                    <div class="booking-summary">
+                        <h6 class="mb-3">Travelers</h6>
+                        <ul class="list-unstyled mb-4">
+                            {% for traveler in travelers %}
+                            <li class="mb-2">{{ traveler.first_name }} {{ traveler.last_name }}</li>
+                            {% endfor %}
+                        </ul>
+                        
+                        <h6 class="mb-3">Flights</h6>
+                        <div class="flight-summary mb-3">
+                            <div class="d-flex justify-content-between small">
+                                <span class="fw-bold">Outbound</span>
+                                <span>{{ flight.departure_date }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span>{{ flight.origin_code }} to {{ flight.destination_code }}</span>
+                                <span>{{ flight.departure_time }} - {{ flight.arrival_time }}</span>
+                            </div>
+                        </div>
+                        
+                        {% if flight.return_flight %}
+                        <div class="flight-summary mb-3">
+                            <div class="d-flex justify-content-between small">
+                                <span class="fw-bold">Return</span>
+                                <span>{{ flight.return_flight.departure_date }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between small">
+                                <span>{{ flight.return_flight.origin_code }} to {{ flight.return_flight.destination_code }}</span>
+                                <span>{{ flight.return_flight.departure_time }} - {{ flight.return_flight.arrival_time }}</span>
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="price-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Base Fare</span>
+                                <span>${{ flight.base_price * passengers }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Taxes & Fees</span>
+                                <span>${{ flight.taxes }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Service Fee</span>
+                                <span>${{ flight.service_fee }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span>${{ flight.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Secure Payment -->
+            <div class="card">
+                <div class="card-body text-center">
+                    <i class="fas fa-lock fa-3x text-primary mb-3"></i>
+                    <h5>Secure Payment</h5>
+                    <p class="small">Your payment information is processed securely. We do not store your credit card details.</p>
+                    <div class="payment-icons">
+                        <i class="fab fa-cc-visa fa-2x me-2"></i>
+                        <i class="fab fa-cc-mastercard fa-2x me-2"></i>
+                        <i class="fab fa-cc-amex fa-2x me-2"></i>
+                        <i class="fab fa-cc-discover fa-2x"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Terms and Conditions Modal -->
+<div class="modal fade" id="termsModal" tabindex="-1" aria-labelledby="termsModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-lg">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="termsModalLabel">Terms and Conditions</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <!-- Terms content would go here -->
+                <p>This is where the terms and conditions would be displayed...</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Other modals would be similar -->
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/payment.js') }}"></script>
+{% endblock %}     

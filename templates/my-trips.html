@@ -1,0 +1,152 @@
+{% extends "base.html" %}
+
+{% block title %}My Trips | SkyWings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Profile Sidebar -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <img src="{{ url_for('static', filename='images/profile-placeholder.png') }}" alt="Profile" class="rounded-circle mb-3" width="100">
+                    <h5>{{ current_user.name }}</h5>
+                    <p class="text-muted small">{{ current_user.email }}</p>
+                </div>
+                <ul class="list-group list-group-flush">
+                    <li class="list-group-item active">
+                        <i class="fas fa-suitcase me-2"></i> My Trips
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-user me-2"></i> Profile
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-heart me-2"></i> Saved Trips
+                    </li>
+                    <li class="list-group-item">
+                        <i class="fas fa-cog me-2"></i> Settings
+                    </li>
+                </ul>
+            </div>
+            
+            <!-- Upcoming Trips Count -->
+            <div class="card mb-4">
+                <div class="card-body text-center">
+                    <h1 class="display-4">{{ upcoming_trips|length }}</h1>
+                    <p class="mb-0">Upcoming Trips</p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <div class="d-flex justify-content-between align-items-center mb-4">
+                <h2>My Trips</h2>
+                <div class="btn-group" role="group">
+                    <button type="button" class="btn btn-outline-primary active">Upcoming</button>
+                    <button type="button" class="btn btn-outline-primary">Completed</button>
+                    <button type="button" class="btn btn-outline-primary">Cancelled</button>
+                </div>
+            </div>
+            
+            {% if upcoming_trips %}
+            {% for trip in upcoming_trips %}
+            <div class="card mb-4 trip-card">
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-8">
+                            <div class="d-flex justify-content-between align-items-start mb-3">
+                                <div>
+                                    <h5 class="mb-1">{{ trip.origin }} to {{ trip.destination }}</h5>
+                                    <p class="text-muted small mb-0">Booking reference: {{ trip.booking_reference }}</p>
+                                </div>
+                                <span class="badge bg-{{ trip.status_color }}">{{ trip.status }}</span>
+                            </div>
+                            
+                            <div class="flight-info mb-3">
+                                <div class="d-flex justify-content-between">
+                                    <span class="fw-bold">{{ trip.departure_time }}</span>
+                                    <span class="fw-bold">{{ trip.arrival_time }}</span>
+                                </div>
+                                <div class="d-flex justify-content-between">
+                                    <span>{{ trip.origin_code }}</span>
+                                    <span>{{ trip.destination_code }}</span>
+                                </div>
+                                <div class="text-muted small">
+                                    {{ trip.duration }} • {{ trip.airline }} • {{ trip.flight_number }}
+                                </div>
+                            </div>
+                            
+                            <div class="travelers-info">
+                                <p class="small mb-1"><strong>Travelers:</strong> 
+                                    {% for traveler in trip.travelers %}
+                                    {{ traveler }}{% if not loop.last %}, {% endif %}
+                                    {% endfor %}
+                                </p>
+                                <p class="small mb-0"><strong>Departure:</strong> {{ trip.departure_date }}</p>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="trip-actions">
+                                <a href="{{ url_for('trip_details', trip_id=trip.id) }}" class="btn btn-primary w-100 mb-2">
+                                    <i class="fas fa-ticket-alt me-2"></i> View Ticket
+                                </a>
+                                <button class="btn btn-outline-primary w-100 mb-2">
+                                    <i class="fas fa-check-in me-2"></i> Check-in
+                                </button>
+                                <button class="btn btn-outline-secondary w-100">
+                                    <i class="fas fa-edit me-2"></i> Manage
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+            {% else %}
+            <div class="card">
+                <div class="card-body text-center py-5">
+                    <i class="fas fa-suitcase fa-4x text-muted mb-4"></i>
+                    <h4>No Upcoming Trips</h4>
+                    <p class="text-muted">You don't have any upcoming trips. Start searching for flights to plan your next adventure!</p>
+                    <a href="{{ url_for('search') }}" class="btn btn-primary">Search Flights</a>
+                </div>
+            </div>
+            {% endif %}
+            
+            <!-- Recently Viewed -->
+            <div class="mt-5">
+                <h4 class="mb-4">Recently Viewed</h4>
+                <div class="row">
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ url_for('static', filename='images/destinations/london.jpg') }}" class="card-img-top" alt="London">
+                            <div class="card-body">
+                                <h5 class="card-title">London</h5>
+                                <p class="card-text text-muted small">From $299 return</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ url_for('static', filename='images/destinations/dubai.jpg') }}" class="card-img-top" alt="Dubai">
+                            <div class="card-body">
+                                <h5 class="card-title">Dubai</h5>
+                                <p class="card-text text-muted small">From $499 return</p>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-4 mb-4">
+                        <div class="card h-100">
+                            <img src="{{ url_for('static', filename='images/destinations/sydney.jpg') }}" class="card-img-top" alt="Sydney">
+                            <div class="card-body">
+                                <h5 class="card-title">Sydney</h5>
+                                <p class="card-text text-muted small">From $799 return</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

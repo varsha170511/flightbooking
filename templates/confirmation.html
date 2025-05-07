@@ -1,0 +1,240 @@
+{% extends "base.html" %}
+
+{% block title %}Booking Confirmation | SkyWings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="confirmation-header text-center py-5">
+        <div class="confirmation-icon">
+            <i class="fas fa-check-circle"></i>
+        </div>
+        <h1 class="mb-3">Your Booking is Confirmed!</h1>
+        <p class="lead">Thank you for choosing SkyWings. Your e-ticket has been sent to <strong>{{ email }}</strong></p>
+        <div class="confirmation-number">
+            <p class="mb-1">Booking Reference:</p>
+            <h3 class="text-primary">{{ booking_reference }}</h3>
+        </div>
+    </div>
+    
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Flight Details -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Flight Details</h5>
+                </div>
+                <div class="card-body">
+                    <!-- Outbound Flight -->
+                    <div class="flight-details mb-4">
+                        <div class="d-flex justify-content-between align-items-center mb-3">
+                            <h6 class="mb-0">Outbound Flight • {{ flight.departure_date }}</h6>
+                            <span class="badge bg-primary">{{ flight.duration }}</span>
+                        </div>
+                        <div class="row">
+                            <div class="col-md-2 text-center">
+                                <img src="{{ url_for('static', filename='images/airlines/' + flight.airline_logo) }}" alt="{{ flight.airline }}" class="img-fluid mb-2" style="max-height: 30px;">
+                                <p class="small mb-0">{{ flight.airline }}</p>
+                                <p class="small text-muted mb-0">{{ flight.flight_number }}</p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <h5 class="mb-0">{{ flight.departure_time }}</h5>
+                                <p class="text-muted small mb-0">{{ flight.origin_code }}</p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <p class="text-muted small mb-0">{{ flight.duration }}</p>
+                                <div class="flight-line-horizontal mx-auto">
+                                    <span class="flight-dot"></span>
+                                    <span class="flight-line-middle"></span>
+                                    <span class="flight-dot"></span>
+                                </div>
+                                <p class="text-muted small mb-0">
+                                    {% if flight.stops == 0 %}
+                                    Non-stop
+                                    {% else %}
+                                    {{ flight.stops }} stop{% if flight.stops > 1 %}s{% endif %}
+                                    {% endif %}
+                                </p>
+                            </div>
+                            <div class="col-md-3 text-center">
+                                <h5 class="mb-0">{{ flight.arrival_time }}</h5>
+                                <p class="text-muted small mb-0">{{ flight.destination_code }}</p>
+                            </div>
+                            <div class="col-md-2 text-center">
+                                <button class="btn btn-sm btn-outline-primary">View Ticket</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Traveler Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Traveler Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="table-responsive">
+                        <table class="table">
+                            <thead>
+                                <tr>
+                                    <th>Name</th>
+                                    <th>Passport</th>
+                                    <th>Frequent Flyer</th>
+                                    <th>Seat</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for traveler in travelers %}
+                                <tr>
+                                    <td>{{ traveler.title }} {{ traveler.first_name }} {{ traveler.last_name }}</td>
+                                    <td>{{ traveler.passport_number }}</td>
+                                    <td>{{ traveler.frequent_flyer_number or 'None' }}</td>
+                                    <td>{{ traveler.seat or 'Not assigned' }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Payment Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Information</h5>
+                </div>
+                <div class="card-body">
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Payment Method:</strong></p>
+                            <p>{{ payment_method }}</p>
+                        </div>
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Billing Address:</strong></p>
+                            <p>{{ billing_address }}</p>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row">
+                        <div class="col-md-6">
+                            <p class="mb-1"><strong>Base Fare:</strong> ${{ flight.base_price }}</p>
+                            <p class="mb-1"><strong>Taxes & Fees:</strong> ${{ flight.taxes }}</p>
+                            <p class="mb-1"><strong>Service Fee:</strong> ${{ flight.service_fee }}</p>
+                        </div>
+                        <div class="col-md-6 text-end">
+                            <h5 class="text-primary">Total Paid: ${{ flight.price }}</h5>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Next Steps -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Next Steps</h5>
+                </div>
+                <div class="card-body">
+                    <div class="steps">
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-envelope"></i>
+                            </div>
+                            <div class="step-content">
+                                <h6>Check Your Email</h6>
+                                <p class="mb-0">We've sent your e-ticket and booking confirmation to your email address.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-mobile-alt"></i>
+                            </div>
+                            <div class="step-content">
+                                <h6>Download Our App</h6>
+                                <p class="mb-0">Manage your booking, check-in online, and get flight updates on the go.</p>
+                            </div>
+                        </div>
+                        <div class="step">
+                            <div class="step-icon">
+                                <i class="fas fa-suitcase"></i>
+                            </div>
+                            <div class="step-content">
+                                <h6>Prepare for Your Trip</h6>
+                                <p class="mb-0">Check baggage allowances, visa requirements, and airport information.</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Manage Booking -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Manage Your Booking</h5>
+                </div>
+                <div class="card-body">
+                    <p>You can manage your booking online anytime using your booking reference and last name.</p>
+                    <div class="d-grid gap-2">
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-print me-2"></i> Print Itinerary
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-envelope me-2"></i> Resend Confirmation
+                        </a>
+                        <a href="#" class="btn btn-outline-primary">
+                            <i class="fas fa-edit me-2"></i> Request Changes
+                        </a>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Need Help? -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Need Help?</h5>
+                </div>
+                <div class="card-body">
+                    <p>Our customer service team is available 24/7 to assist you with your booking.</p>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-phone-alt me-3"></i>
+                        <span>+1 (800) 123-4567</span>
+                    </div>
+                    <div class="d-flex align-items-center mb-3">
+                        <i class="fas fa-envelope me-3"></i>
+                        <span>support@skywings.com</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-comments me-3"></i>
+                        <span>Live Chat</span>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Travel Extras -->
+            <div class="card">
+                <div class="card-header">
+                    <h5 class="mb-0">Travel Extras</h5>
+                </div>
+                <div class="card-body">
+                    <div class="extra-item mb-3">
+                        <h6>Airport Transfer</h6>
+                        <p class="small">Book your airport transfer in advance and travel with peace of mind.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Book Now</a>
+                    </div>
+                    <div class="extra-item mb-3">
+                        <h6>Travel Insurance</h6>
+                        <p class="small">Protect your trip with comprehensive travel insurance.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">Add Insurance</a>
+                    </div>
+                    <div class="extra-item">
+                        <h6>Hotel Deals</h6>
+                        <p class="small">Find the perfect hotel for your stay at exclusive rates.</p>
+                        <a href="#" class="btn btn-sm btn-outline-primary">View Hotels</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

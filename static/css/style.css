@@ -1,0 +1,392 @@
+/* Base Styles */
+:root {
+    --primary-color: #3498db;
+    --secondary-color: #2c3e50;
+    --accent-color: #e74c3c;
+    --light-color: #ecf0f1;
+    --dark-color: #2c3e50;
+    --success-color: #2ecc71;
+    --warning-color: #f39c12;
+    --danger-color: #e74c3c;
+    --border-radius: 8px;
+    --box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: #f8f9fa;
+    color: #333;
+    line-height: 1.6;
+}
+
+a {
+    color: var(--primary-color);
+    text-decoration: none;
+    transition: var(--transition);
+}
+
+a:hover {
+    color: var(--secondary-color);
+}
+
+/* Header & Navigation */
+.navbar {
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+}
+
+.navbar-brand img {
+    transition: var(--transition);
+}
+
+.navbar-brand img:hover {
+    transform: scale(1.05);
+}
+
+/* Hero Section */
+.hero-section {
+    background-image: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('../images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    padding: 100px 0;
+    position: relative;
+    margin-top: -20px;
+}
+
+.hero-overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.3);
+}
+
+.hero-content {
+    position: relative;
+    z-index: 1;
+}
+
+.search-box {
+    background-color: rgba(255, 255, 255, 0.9);
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+}
+
+/* Cards */
+.card {
+    border: none;
+    border-radius: var(--border-radius);
+    box-shadow: var(--box-shadow);
+    transition: var(--transition);
+    margin-bottom: 20px;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+}
+
+.card-header {
+    border-radius: var(--border-radius) var(--border-radius) 0 0 !important;
+}
+
+/* Flight Cards */
+.flight-card {
+    transition: var(--transition);
+}
+
+.flight-card:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
+}
+
+.flight-route {
+    position: relative;
+}
+
+.flight-line {
+    position: relative;
+    height: 1px;
+    background-color: #ddd;
+    margin: 10px 0;
+}
+
+.flight-dot {
+    position: absolute;
+    width: 8px;
+    height: 8px;
+    background-color: var(--primary-color);
+    border-radius: 50%;
+    top: -4px;
+}
+
+.flight-dot:first-child {
+    left: 0;
+}
+
+.flight-dot:last-child {
+    right: 0;
+}
+
+.flight-line-middle {
+    position: absolute;
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+    top: 0;
+}
+
+.flight-line-horizontal {
+    position: relative;
+    width: 100%;
+    height: 1px;
+    background-color: #ddd;
+    margin: 10px 0;
+}
+
+/* Destination Cards */
+.destination-card {
+    position: relative;
+    overflow: hidden;
+    border-radius: var(--border-radius);
+    transition: var(--transition);
+}
+
+.destination-card img {
+    transition: var(--transition);
+}
+
+.destination-card:hover img {
+    transform: scale(1.05);
+}
+
+.destination-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(transparent, rgba(0, 0, 0, 0.7));
+    color: white;
+    padding: 20px;
+    opacity: 0;
+    transition: var(--transition);
+}
+
+.destination-card:hover .destination-overlay {
+    opacity: 1;
+}
+
+/* Buttons */
+.btn {
+    border-radius: var(--border-radius);
+    padding: 10px 20px;
+    font-weight: 500;
+    transition: var(--transition);
+}
+
+.btn-primary {
+    background-color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-primary:hover {
+    background-color: darken(var(--primary-color), 10%);
+    border-color: darken(var(--primary-color), 10%);
+}
+
+.btn-outline-primary {
+    color: var(--primary-color);
+    border-color: var(--primary-color);
+}
+
+.btn-outline-primary:hover {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+/* Forms */
+.form-control, .form-select {
+    border-radius: var(--border-radius);
+    padding: 10px 15px;
+    border: 1px solid #ddd;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 0.25rem rgba(52, 152, 219, 0.25);
+}
+
+/* Booking Progress */
+.booking-progress .step {
+    text-align: center;
+    position: relative;
+}
+
+.booking-progress .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    background-color: #ddd;
+    color: #666;
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.booking-progress .step.active .step-number {
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.booking-progress .step.completed .step-number {
+    background-color: var(--success-color);
+    color: white;
+}
+
+.booking-progress .step-title {
+    font-size: 0.9rem;
+    color: #666;
+}
+
+.booking-progress .step.active .step-title {
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+/* Confirmation Page */
+.confirmation-header {
+    background-color: #f8f9fa;
+    border-radius: var(--border-radius);
+}
+
+.confirmation-icon {
+    width: 80px;
+    height: 80px;
+    background-color: var(--success-color);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 2.5rem;
+    margin-bottom: 20px;
+}
+
+.confirmation-number {
+    background-color: white;
+    padding: 15px;
+    border-radius: var(--border-radius);
+    display: inline-block;
+    box-shadow: var(--box-shadow);
+}
+
+/* Steps */
+.steps {
+    position: relative;
+    padding-left: 30px;
+}
+
+.step {
+    position: relative;
+    padding-bottom: 20px;
+}
+
+.step:last-child {
+    padding-bottom: 0;
+}
+
+.step-icon {
+    position: absolute;
+    left: -30px;
+    top: 0;
+    width: 20px;
+    height: 20px;
+    background-color: var(--primary-color);
+    color: white;
+    border-radius: 50%;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.8rem;
+}
+
+.step:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    left: -21px;
+    top: 20px;
+    bottom: 0;
+    width: 2px;
+    background-color: #ddd;
+}
+
+/* Login/Register */
+.social-login .btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.separator {
+    display: flex;
+    align-items: center;
+    text-align: center;
+    color: #666;
+    font-weight: bold;
+}
+
+.separator::before, .separator::after {
+    content: '';
+    flex: 1;
+    border-bottom: 1px solid #ddd;
+}
+
+.separator::before {
+    margin-right: 10px;
+}
+
+.separator::after {
+    margin-left: 10px;
+}
+
+.register-image {
+    background-size: cover;
+    background-position: center;
+    height: 100%;
+    min-height: 500px;
+}
+
+.register-overlay {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: linear-gradient(to bottom, transparent, rgba(0,0,0,0.7));
+    padding: 2rem;
+    color: white;
+}
+.password-strength .progress {
+    height: 5px;
+}
+
+.password-strength .progress-bar {
+    transition: width 0.3s ease;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .hero-section {
+        padding: 60px 0;
+    }
+    
+    .search-box {
+        padding: 20px;
+    }
+    
+    .destination-overlay {
+        opacity: 1;
+    }
+}

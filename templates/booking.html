@@ -1,0 +1,243 @@
+{% extends "base.html" %}
+
+{% block title %}Booking | SkyWings{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8">
+            <!-- Booking Progress -->
+            <div class="booking-progress mb-5">
+                <div class="progress" style="height: 5px;">
+                    <div class="progress-bar" role="progressbar" style="width: 33%;"></div>
+                </div>
+                <div class="d-flex justify-content-between mt-2">
+                    <div class="step active">
+                        <span class="step-number">1</span>
+                        <span class="step-title">Traveler Details</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">2</span>
+                        <span class="step-title">Payment</span>
+                    </div>
+                    <div class="step">
+                        <span class="step-number">3</span>
+                        <span class="step-title">Confirmation</span>
+                    </div>
+                </div>
+            </div>
+            
+            <h2 class="mb-4">Traveler Details</h2>
+            
+            <!-- Contact Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Contact Information</h5>
+                </div>
+                <div class="card-body">
+                    <form>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label for="contactFirstName" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="contactFirstName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactLastName" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="contactLastName" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactEmail" class="form-label">Email Address</label>
+                                <input type="email" class="form-control" id="contactEmail" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="contactPhone" class="form-label">Phone Number</label>
+                                <input type="tel" class="form-control" id="contactPhone" required>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Traveler Information -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Traveler Information</h5>
+                </div>
+                <div class="card-body">
+                    {% for i in range(passengers) %}
+                    <div class="traveler-form mb-4 {% if i > 0 %}mt-4 pt-4 border-top{% endif %}">
+                        <h5 class="mb-3">Traveler {{ i + 1 }}</h5>
+                        <div class="row g-3">
+                            <div class="col-md-4">
+                                <label for="title{{i}}" class="form-label">Title</label>
+                                <select class="form-select" id="title{{i}}">
+                                    <option value="mr">Mr.</option>
+                                    <option value="mrs">Mrs.</option>
+                                    <option value="ms">Ms.</option>
+                                </select>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="firstName{{i}}" class="form-label">First Name</label>
+                                <input type="text" class="form-control" id="firstName{{i}}" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="lastName{{i}}" class="form-label">Last Name</label>
+                                <input type="text" class="form-control" id="lastName{{i}}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="dob{{i}}" class="form-label">Date of Birth</label>
+                                <input type="date" class="form-control" id="dob{{i}}" required>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="nationality{{i}}" class="form-label">Nationality</label>
+                                <select class="form-select" id="nationality{{i}}">
+                                    <option value="us">United States</option>
+                                    <option value="uk">United Kingdom</option>
+                                    <!-- More countries... -->
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label for="passport{{i}}" class="form-label">Passport Number</label>
+                                <input type="text" class="form-control" id="passport{{i}}">
+                            </div>
+                            <div class="col-md-6">
+                                <label for="passportExpiry{{i}}" class="form-label">Passport Expiry Date</label>
+                                <input type="date" class="form-control" id="passportExpiry{{i}}">
+                            </div>
+                            <div class="col-12">
+                                <div class="form-check">
+                                    <input class="form-check-input" type="checkbox" id="frequentFlyer{{i}}">
+                                    <label class="form-check-label" for="frequentFlyer{{i}}">
+                                        Add Frequent Flyer Number
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+            
+            <!-- Payment Method Selection -->
+            <div class="card mb-4">
+                <div class="card-header">
+                    <h5 class="mb-0">Payment Method</h5>
+                </div>
+                <div class="card-body">
+                    <div class="payment-methods">
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="creditCard" checked>
+                            <label class="form-check-label" for="creditCard">
+                                <i class="fab fa-cc-visa fa-lg me-2"></i>
+                                <i class="fab fa-cc-mastercard fa-lg me-2"></i>
+                                <i class="fab fa-cc-amex fa-lg me-2"></i>
+                                Credit/Debit Card
+                            </label>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input class="form-check-input" type="radio" name="paymentMethod" id="paypal">
+                            <label class="form-check-label" for="paypal">
+                                <i class="fab fa-paypal fa-lg me-2"></i>
+                                PayPal
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="d-flex justify-content-between mt-4">
+                <a href="{{ url_for('flight_details', flight_id=flight.id) }}" class="btn btn-outline-primary">
+                    <i class="fas fa-arrow-left me-2"></i> Back to Flight Details
+                </a>
+                <form action="{{ url_for('booking', flight_id=flight.id) }}" method="POST">
+                    <button type="submit" class="btn btn-primary">
+                        Continue to Payment <i class="fas fa-arrow-right ms-2"></i>
+                    </button>
+                </form>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <!-- Booking Summary -->
+            <div class="card mb-4 sticky-top" style="top: 20px;">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Your Trip</h5>
+                </div>
+                <div class="card-body">
+                    <div class="trip-summary">
+                        <h6 class="mb-3">Outbound Flight</h6>
+                        <div class="flight-info mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">{{ flight.departure_time }}</span>
+                                <span class="fw-bold">{{ flight.arrival_time }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ flight.origin_code }}</span>
+                                <span>{{ flight.destination_code }}</span>
+                            </div>
+                            <div class="text-muted small">
+                                {{ flight.duration }} • {{ flight.airline }}
+                            </div>
+                        </div>
+                        
+                        {% if flight.return_flight %}
+                        <h6 class="mb-3 mt-4">Return Flight</h6>
+                        <div class="flight-info mb-3">
+                            <div class="d-flex justify-content-between">
+                                <span class="fw-bold">{{ flight.return_flight.departure_time }}</span>
+                                <span class="fw-bold">{{ flight.return_flight.arrival_time }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between">
+                                <span>{{ flight.return_flight.origin_code }}</span>
+                                <span>{{ flight.return_flight.destination_code }}</span>
+                            </div>
+                            <div class="text-muted small">
+                                {{ flight.return_flight.duration }} • {{ flight.return_flight.airline }}
+                            </div>
+                        </div>
+                        {% endif %}
+                        
+                        <hr>
+                        
+                        <div class="price-summary">
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Base Fare ({{ passengers }} x ${{ flight.base_price }})</span>
+                                <span>${{ flight.base_price * passengers }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Taxes & Fees</span>
+                                <span>${{ flight.taxes }}</span>
+                            </div>
+                            <div class="d-flex justify-content-between mb-2">
+                                <span>Service Fee</span>
+                                <span>${{ flight.service_fee }}</span>
+                            </div>
+                            <hr>
+                            <div class="d-flex justify-content-between fw-bold">
+                                <span>Total</span>
+                                <span>${{ flight.price }}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Need Help? -->
+            <div class="card">
+                <div class="card-body">
+                    <h5 class="mb-3">Need Help?</h5>
+                    <p>Our customer service team is available 24/7 to assist you with your booking.</p>
+                    <div class="d-flex align-items-center mb-2">
+                        <i class="fas fa-phone-alt me-3"></i>
+                        <span>+1 (800) 123-4567</span>
+                    </div>
+                    <div class="d-flex align-items-center">
+                        <i class="fas fa-envelope me-3"></i>
+                        <span>support@skywings.com</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

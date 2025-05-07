@@ -1,0 +1,169 @@
+{% extends "base.html" %}
+
+{% block title %}Flight Search Results | SkyWings{% endblock %}
+
+{% block head %}
+<link rel="stylesheet" href="{{ url_for('static', filename='css/search.css') }}">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Search Summary Section -->
+    <div class="card mb-4">
+        <div class="card-body">
+            <h4 class="mb-3">Flights from {{ origin }} to {{ destination }}</h4>
+            <div class="d-flex justify-content-between">
+                <div>
+                    <p class="mb-1"><strong>Departure:</strong> {{ departure_date }}</p>
+                    {% if return_date %}
+                    <p class="mb-1"><strong>Return:</strong> {{ return_date }}</p>
+                    {% endif %}
+                </div>
+                <div>
+                    <p class="mb-1"><strong>Passengers:</strong> {{ passengers|default(1) }}</p>
+                    <p class="mb-1"><strong>Class:</strong> {{ flight_class|default('economy')|capitalize }}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row">
+        <div class="col-md-3">
+            <!-- Filters Sidebar -->
+            <div class="card mb-4">
+                <div class="card-header bg-primary text-white">
+                    <h5 class="mb-0">Filters</h5>
+                </div>
+                <div class="card-body">
+                    <form method="GET" action="{{ url_for('search') }}">
+                        <!-- Filter content remains the same -->
+                        ...
+                    </form>
+                </div>
+            </div>
+            
+            <!-- Deals Card -->
+            <div class="card">
+                <div class="card-header bg-success text-white">
+                    <h5 class="mb-0">Special Deals</h5>
+                </div>
+                <div class="card-body">
+                    <div class="deal-item mb-3">
+                        <h6>New York to London</h6>
+                        <p class="text-success">$399 <small class="text-muted">was $599</small></p>
+                        <a href="{{ url_for('search', origin='NYC', destination='LON') }}" class="btn btn-sm btn-outline-success">View Deal</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-9">
+            <!-- Sort Options -->
+            <div class="d-flex justify-content-between align-items-center mb-3">
+                <div>
+                    <span class="me-2">Sort by:</span>
+                    <div class="btn-group" role="group">
+                        <button type="button" class="btn btn-outline-primary active">Best</button>
+                        <button type="button" class="btn btn-outline-primary">Price</button>
+                        <button type="button" class="btn btn-outline-primary">Duration</button>
+                        <button type="button" class="btn btn-outline-primary">Departure</button>
+                    </div>
+                </div>
+                <div>
+                    <span class="text-muted">{{ flights|length }} flights found</span>
+                </div>
+            </div>
+            
+            <!-- Flight Results -->
+            {% if flights %}
+                {% for flight in flights %}
+                <div class="card mb-3 flight-card">
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="col-md-3">
+                                <div class="airline-info text-center">
+                                    <img src="{{ url_for('static', filename='images/airlines/' + flight.airline_logo) }}" 
+                                         alt="{{ flight.airline }}" 
+                                         class="img-fluid mb-2" 
+                                         style="max-height: 40px;">
+                                    <p class="mb-0">{{ flight.airline }}</p>
+                                    <p class="text-muted small mb-0">{{ flight.flight_number }}</p>
+                                </div>
+                            </div>
+                            <div class="col-md-6">
+                                <div class="flight-details">
+                                    <div class="d-flex justify-content-between">
+                                        <div class="text-center">
+                                            <h5 class="mb-0">{{ flight.departure_time }}</h5>
+                                            <p class="text-muted small mb-0">{{ flight.origin_code }}</p>
+                                        </div>
+                                        <div class="flight-route text-center px-2">
+                                            <p class="text-muted small mb-0">{{ flight.duration }}</p>
+                                            <div class="flight-line">
+                                                <span class="flight-dot"></span>
+                                                <span class="flight-line-middle"></span>
+                                                <span class="flight-dot"></span>
+                                            </div>
+                                            <p class="text-muted small mb-0">
+                                                {% if flight.stops == 0 %}
+                                                Non-stop
+                                                {% else %}
+                                                {{ flight.stops }} stop{% if flight.stops > 1 %}s{% endif %}
+                                                {% endif %}
+                                            </p>
+                                        </div>
+                                        <div class="text-center">
+                                            <h5 class="mb-0">{{ flight.arrival_time }}</h5>
+                                            <p class="text-muted small mb-0">{{ flight.destination_code }}</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div class="col-md-3">
+                                <div class="price-info text-center">
+                                    <h4 class="text-primary mb-2">${{ flight.price }}</h4>
+                                    <a href="{{ url_for('flight_details', 
+                                                     flight_id=flight.id, 
+                                                     origin=flight.origin_code,
+                                                     destination=flight.destination_code,
+                                                     passengers=passengers,
+                                                     class=flight.flight_class,
+                                                     return_date=return_date if return_date else None) }}" 
+                                       class="btn btn-primary btn-sm">
+                                        Select
+                                    </a>
+                                    <p class="text-muted small mt-2 mb-0">{{ flight.seats_left }} seats left</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                {% endfor %}
+            {% else %}
+                <div class="alert alert-info">
+                    No flights found matching your criteria. Please try different search parameters.
+                </div>
+            {% endif %}
+            
+            <!-- Pagination -->
+            <nav aria-label="Flight pagination">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item disabled">
+                        <a class="page-link" href="#" tabindex="-1">Previous</a>
+                    </li>
+                    <li class="page-item active"><a class="page-link" href="#">1</a></li>
+                    <li class="page-item"><a class="page-link" href="#">2</a></li>
+                    <li class="page-item"><a class="page-link" href="#">3</a></li>
+                    <li class="page-item">
+                        <a class="page-link" href="#">Next</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/search.js') }}"></script>
+{% endblock %}

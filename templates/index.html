@@ -1,0 +1,171 @@
+{% extends "base.html" %}
+
+{% block title %}Find Cheap Flights | SkyWings{% endblock %}
+
+{% block content %}
+<div class="hero-section mb-5">
+    <div class="hero-overlay"></div>
+    <div class="container position-relative">
+        <div class="hero-content text-center text-white py-5">
+            <h1 class="display-4 fw-bold mb-4">Find Your Perfect Flight</h1>
+            <p class="lead mb-5">Compare prices from hundreds of airlines and travel sites</p>
+            
+            <!-- Search Form -->
+            <div class="search-box bg-white rounded p-4 shadow">
+                <ul class="nav nav-tabs mb-4" id="searchTabs" role="tablist">
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link active" id="round-trip-tab" data-bs-toggle="tab" data-bs-target="#round-trip" type="button">Round Trip</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="one-way-tab" data-bs-toggle="tab" data-bs-target="#one-way" type="button">One Way</button>
+                    </li>
+                    <li class="nav-item" role="presentation">
+                        <button class="nav-link" id="multi-city-tab" data-bs-toggle="tab" data-bs-target="#multi-city" type="button">Multi-City</button>
+                    </li>
+                </ul>
+                
+                <div class="tab-content" id="searchTabsContent">
+                    <div class="tab-pane fade show active" id="round-trip" role="tabpanel">
+                        <form action="{{ url_for('search') }}" method="GET">
+                            <div class="row g-3">
+                                <div class="col-md-6">
+                                    <label for="from" class="form-label">From</label>
+                                    <input type="text" class="form-control" id="from" name="origin" placeholder="City or Airport" required>
+                                </div>
+                                <div class="col-md-6">
+                                    <label for="to" class="form-label">To</label>
+                                    <input type="text" class="form-control" id="to" name="destination" placeholder="City or Airport" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="departure" class="form-label">Departure</label>
+                                    <input type="date" class="form-control" id="departure" name="departure_date" required>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="return" class="form-label">Return</label>
+                                    <input type="date" class="form-control" id="return" name="return_date">
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="passengers" class="form-label">Passengers</label>
+                                    <select class="form-select" id="passengers" name="passengers">
+                                        <option value="1">1 Adult</option>
+                                        <option value="2" selected>2 Adults</option>
+                                        <option value="3">3 Adults</option>
+                                        <option value="4">4 Adults</option>
+                                    </select>
+                                </div>
+                                <div class="col-md-3">
+                                    <label for="class" class="form-label">Class</label>
+                                    <select class="form-select" id="class" name="class">
+                                        <option value="economy">Economy</option>
+                                        <option value="premium">Premium Economy</option>
+                                        <option value="business">Business</option>
+                                        <option value="first">First Class</option>
+                                    </select>
+                                </div>
+                                <div class="col-12 mt-3">
+                                    <button type="submit" class="btn btn-primary btn-lg w-100">
+                                        <i class="fas fa-search me-2"></i> Search Flights
+                                    </button>
+                                </div>
+                            </div>
+                        </form>
+                    </div>
+                    <!-- Other tab panes would go here -->
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Popular Destinations -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Popular Destinations</h2>
+        <div class="row">
+            <div class="col-md-4 mb-4">
+                <div class="destination-card">
+                    <img src="{{ url_for('static', filename='images/destinations/new-york.jpg') }}" alt="New York" class="img-fluid rounded">
+                    <div class="destination-overlay">
+                        <h3>New York</h3>
+                        <p>From $299</p>
+                        <a href="#" class="btn btn-sm btn-outline-light">View Flights</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="destination-card">
+                    <img src="{{ url_for('static', filename='images/destinations/paris.jpg') }}" alt="Paris" class="img-fluid rounded">
+                    <div class="destination-overlay">
+                        <h3>Paris</h3>
+                        <p>From $349</p>
+                        <a href="#" class="btn btn-sm btn-outline-light">View Flights</a>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="destination-card">
+                    <img src="{{ url_for('static', filename='images/destinations/tokyo.jpg') }}" alt="Tokyo" class="img-fluid rounded">
+                    <div class="destination-overlay">
+                        <h3>Tokyo</h3>
+                        <p>From $599</p>
+                        <a href="#" class="btn btn-sm btn-outline-light">View Flights</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Special Offers -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Special Offers</h2>
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="offer-card bg-primary text-white rounded p-4">
+                    <h3>Summer Sale</h3>
+                    <p>Up to 40% off on selected destinations</p>
+                    <a href="#" class="btn btn-light">Book Now</a>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="offer-card bg-success text-white rounded p-4">
+                    <h3>Last Minute Deals</h3>
+                    <p>Amazing prices for next week flights</p>
+                    <a href="#" class="btn btn-light">Book Now</a>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Why Choose Us -->
+<section class="mb-5">
+    <div class="container">
+        <h2 class="text-center mb-4">Why Choose SkyWings?</h2>
+        <div class="row text-center">
+            <div class="col-md-4 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-check-circle fa-3x text-primary mb-3"></i>
+                    <h4>Best Price Guarantee</h4>
+                    <p>We guarantee the best prices for your flights or we'll refund the difference.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-headset fa-3x text-primary mb-3"></i>
+                    <h4>24/7 Customer Support</h4>
+                    <p>Our support team is available around the clock to assist you.</p>
+                </div>
+            </div>
+            <div class="col-md-4 mb-4">
+                <div class="p-3">
+                    <i class="fas fa-shield-alt fa-3x text-primary mb-3"></i>
+                    <h4>Secure Booking</h4>
+                    <p>Your personal and payment information is always protected.</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</section>
+{% endblock %}
