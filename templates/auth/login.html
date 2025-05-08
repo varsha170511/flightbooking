@@ -15,22 +15,30 @@
                     </div>
 
                     <form method="POST" action="{{ url_for('login') }}">
+                        {{ form.hidden_tag() }}
+                        
                         <div class="mb-3">
                             <label for="email" class="form-label">Email Address</label>
-                            <input type="email" class="form-control" id="email" name="email" required>
+                            {{ form.email(class="form-control", id="email") }}
+                            {% for error in form.email.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
                         </div>
 
                         <div class="mb-3">
                             <label for="password" class="form-label">Password</label>
-                            <input type="password" class="form-control" id="password" name="password" required>
+                            {{ form.password(class="form-control", id="password") }}
+                            {% for error in form.password.errors %}
+                            <div class="invalid-feedback d-block">{{ error }}</div>
+                            {% endfor %}
                         </div>
 
                         <div class="mb-3 form-check">
-                            <input type="checkbox" class="form-check-input" id="remember" name="remember">
+                            {{ form.remember(class="form-check-input", id="remember") }}
                             <label class="form-check-label" for="remember">Remember me</label>
                         </div>
 
-                        <button type="submit" class="btn btn-primary w-100 py-2 mb-3">Sign In</button>
+                        {{ form.submit(class="btn btn-primary w-100 py-2 mb-3") }}
 
                         <div class="text-center">
                             <p class="text-muted mb-0">Don't have an account? 

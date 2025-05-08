@@ -3,24 +3,25 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_login import LoginManager, UserMixin, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_wtf import FlaskForm
-from wtforms import StringField, BooleanField,PasswordField, SubmitField, SelectField, DateField, IntegerField
-from wtforms.validators import DataRequired, Email, Length, NumberRange
+from wtforms import StringField, BooleanField, PasswordField, SubmitField, SelectField, DateField, IntegerField
+from wtforms.validators import DataRequired, Email, Length, NumberRange, EqualTo
 from datetime import datetime, timedelta
 import random
 import os
-from wtforms.validators import EqualTo
-from flask_bcrypt import Bcrypt 
+from flask_bcrypt import Bcrypt
 
 app = Flask(__name__)
 app.secret_key = os.urandom(24)
 
-# Database configuration
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:@localhost/flight_booking'
+# Database configuration - Changed to SQLite
+basedir = os.path.abspath(os.path.dirname(__file__))
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///' + os.path.join(basedir, 'flight_booking.db')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
-db = SQLAlchemy(app)
 
+db = SQLAlchemy(app)
 bcrypt = Bcrypt(app)
-# Flask-Login configuration
+
+# Flask-Login configuration  
 login_manager = LoginManager()
 login_manager.init_app(app)
 login_manager.login_view = 'login'
@@ -28,11 +29,14 @@ login_manager.login_view = 'login'
 # Models
 class User(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(100), unique=True)
-    password = db.Column(db.String(200))  # <-- Increased length for bcrypt hashes
-    name = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password = db.Column(db.String(200), nullable=False)  # <-- Increased length for bcrypt hashes
+    name = db.Column(db.String(100), nullable=False)
     phone = db.Column(db.String(20))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    def get_id(self):
+        return str(self.id)
 
 class Flight(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -79,17 +83,17 @@ class SearchForm(FlaskForm):
         ('LON', 'London (Heathrow)'),
         ('DEL', 'Delhi (IGI)'),
         ('TOK', 'Tokyo (Narita)')
-    ], validators=[DataRequired()])
+    ])
     destination = SelectField('To', choices=[
         ('NYC', 'New York (JFK)'),
         ('LON', 'London (Heathrow)'),
         ('DEL', 'Delhi (IGI)'),
         ('TOK', 'Tokyo (Narita)')
-    ], validators=[DataRequired()])
-    departure = DateField('Departure Date', format='%Y-%m-%d', validators=[DataRequired()])
+    ])
+    departure = DateField('Departure Date', format='%Y-%m-%d')
     passengers = SelectField('Passengers', 
-                           coerce=int, 
-                           choices=[(i, str(i)) for i in range(1, 5)], 
+                           choices=[(i, str(i)) for i in range(1, 10)],
+                           coerce=int,
                            default=1)
     submit = SubmitField('Search Flights')
 
@@ -289,7 +293,22 @@ def booking(flight_id):
 def payment(flight_id):
     booking_reference = request.args.get('booking_reference', f"SW{random.randint(100000, 999999)}")
     
-    # In a real app, this would come from the database
+    # Create a booking object with all required information
+    booking = {
+        'id': random.randint(1000, 9999),  # Temporary ID for demo
+        'booking_reference': booking_reference,
+        'total_price': 399,  # This should come from the actual flight price
+        'status': 'pending',
+        'travelers': [
+            {
+                'first_name': 'John',
+                'last_name': 'Doe'
+            }
+            # Add more travelers based on the actual booking data
+        ]
+    }
+
+    # Get flight data
     flight = {
         'id': flight_id,
         'airline': 'SkyWings Airlines',
@@ -308,7 +327,6 @@ def payment(flight_id):
         'flight_class': 'economy'
     }
     
-    # Mock travelers data
     passengers = int(request.args.get('passengers', 1))
     travelers = []
     for i in range(passengers):
@@ -320,22 +338,67 @@ def payment(flight_id):
         })
     
     return render_template('payment.html', 
-                        flight=flight, 
-                        travelers=travelers,
-                        booking_reference=booking_reference,
-                        passengers=passengers)
+                         flight=flight, 
+                         travelers=travelers,
+                         booking=booking,  # Add the booking object
+                         booking_reference=booking_reference,
+                         passengers=passengers)
 
 @app.route('/process-payment', methods=['POST'])
 @login_required
 def process_payment():
-    # In a real app, this would process the payment with a payment processor
-    # and create a booking record in the database
-    
-    # Generate a random booking reference
-    booking_reference = f"SW{random.randint(100000, 999999)}"
-    
-    # Redirect to confirmation page
-    return redirect(url_for('confirmation', booking_reference=booking_reference))
+    try:
+        booking_reference = request.form.get('booking_reference', f"SW{random.randint(100000, 999999)}")
+        flight_id = int(request.form.get('flight_id'))
+        
+        # Get the flight from database or create one if it doesn't exist (for demo)
+        flight = Flight.query.get(flight_id)
+        if not flight:
+            flight = Flight(
+                id=flight_id,
+                airline='SkyWings Airlines',
+                flight_number=f"SW{random.randint(100, 999)}",
+                origin='New York',
+                origin_code='NYC',
+                destination='London',
+                destination_code='LON',
+                departure_time=datetime.strptime('2023-12-15 09:30:00', '%Y-%m-%d %H:%M:%S'),
+                arrival_time=datetime.strptime('2023-12-15 21:15:00', '%Y-%m-%d %H:%M:%S'),
+                duration='7h 45m',
+                price=399.0,
+                seats_available=150
+            )
+            db.session.add(flight)
+        
+        # Create the booking
+        booking = Booking(
+            user_id=current_user.id,
+            flight_id=flight_id,
+            booking_reference=booking_reference,
+            travelers=[{
+                'first_name': request.form.get('firstName0'),
+                'last_name': request.form.get('lastName0'),
+                'title': request.form.get('title0', 'Mr.'),
+            }],  # For simplicity, just storing the first traveler
+            total_price=float(request.form.get('total_price', 399.0)),
+            status='confirmed'
+        )
+        
+        # Update flight seats
+        flight.seats_available = max(0, flight.seats_available - 1)
+        
+        # Save to database
+        db.session.add(booking)
+        db.session.commit()
+        
+        flash('Payment processed successfully!', 'success')
+        return redirect(url_for('confirmation', booking_reference=booking_reference))
+        
+    except Exception as e:
+        db.session.rollback()
+        app.logger.error(f"Payment processing error: {str(e)}")
+        flash('An error occurred while processing payment. Please try again.', 'danger')
+        return redirect(url_for('payment', flight_id=flight_id))
 
 @app.route('/confirmation')
 @login_required
@@ -439,54 +502,58 @@ def my_trips():
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
+    if current_user.is_authenticated:
+        return redirect(url_for('my_trips'))
+        
     form = LoginForm()
     
     if form.validate_on_submit():
-        email = form.email.data
-        password = form.password.data
-        remember = form.remember.data
-        
-        user = User.query.filter_by(email=email).first()
-        
-        # Verify password with bcrypt
-        if not user or not bcrypt.check_password_hash(user.password, password):  # <-- Updated line
-            flash('Please check your login details and try again.', 'danger')
-            return redirect(url_for('login'))
-        
-        login_user(user, remember=remember)
-        return redirect(url_for('my_trips'))
+        try:
+            email = form.email.data
+            password = form.password.data
+            remember = form.remember.data
+            
+            user = User.query.filter_by(email=email).first()
+            
+            if user and bcrypt.check_password_hash(user.password, password):
+                login_user(user, remember=remember)
+                # Get the next page from args or default to my_trips
+                next_page = request.args.get('next')
+                flash('Successfully logged in!', 'success')
+                return redirect(next_page or url_for('my_trips'))
+            else:
+                flash('Invalid email or password.', 'danger')
+        except Exception as e:
+            app.logger.error(f"Login error: {str(e)}")
+            flash('An error occurred. Please try again.', 'danger')
     
     return render_template('auth/login.html', form=form)
+
 @app.route('/register', methods=['GET', 'POST'])
 def register():
+    if current_user.is_authenticated:
+        return redirect(url_for('index'))
+        
     form = RegisterForm()
     if form.validate_on_submit():
-        email = form.email.data
-        name = f"{form.first_name.data} {form.last_name.data}"
-        password = form.password.data
-        phone = form.phone.data
-        
-        # Check if user exists
-        user = User.query.filter_by(email=email).first()
-        if user:
-            flash('Email address already exists', 'danger')
-            return redirect(url_for('register'))
-        
-        # Create new user with bcrypt hashing
-        new_user = User(
-            email=email,
-            name=name,
-            password=bcrypt.generate_password_hash(password).decode('utf-8'),
-            phone=phone
-        )
-        
-        db.session.add(new_user)
-        db.session.commit()
-        
-        login_user(new_user)
-        flash('Registration successful!', 'success')
-        return redirect(url_for('my_trips'))  # Changed from trip_details to my_trips
-    
+        try:
+            password_hash = bcrypt.generate_password_hash(form.password.data).decode('utf-8')
+            user = User(
+                email=form.email.data,
+                name=f"{form.first_name.data} {form.last_name.data}",
+                password=password_hash,
+                phone=form.phone.data
+            )
+            db.session.add(user)
+            db.session.commit()
+            login_user(user)
+            flash('Registration successful!', 'success')
+            return redirect(url_for('my_trips'))
+        except Exception as e:
+            db.session.rollback()
+            flash('An error occurred. Please try again.', 'danger')
+            app.logger.error(f"Registration error: {str(e)}")
+            
     return render_template('auth/register.html', form=form)
 
 @app.route('/logout')
@@ -512,4 +579,4 @@ def trip_details(trip_id):
 if __name__ == '__main__':
     with app.app_context():
         db.create_all()  # Create database tables
-    app.run(debug=True) 
+    app.run(debug=True)

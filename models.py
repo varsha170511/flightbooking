@@ -35,6 +35,8 @@ class Flight(db.Model):
     economy_price = db.Column(db.Float, nullable=False)
     seats_available = db.Column(db.Integer, nullable=False)
     bookings = db.relationship('Booking', backref='flight', lazy=True)
+    origin_airport = db.relationship('Airport', foreign_keys=[origin_airport_id])
+    destination_airport = db.relationship('Airport', foreign_keys=[destination_airport_id])
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
@@ -42,3 +44,4 @@ class Booking(db.Model):
     flight_id = db.Column(db.Integer, db.ForeignKey('flight.id'), nullable=False)
     booking_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
     status = db.Column(db.String(20), default='confirmed')
+    flight = db.relationship('Flight', backref='bookings')

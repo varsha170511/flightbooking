@@ -39,7 +39,16 @@
                     <h5 class="mb-0">Credit/Debit Card</h5>
                 </div>
                 <div class="card-body">
-                    <form id="paymentForm" action="{{ url_for('process_payment', booking_id=booking.id) }}" method="POST">
+                    <form id="paymentForm" action="{{ url_for('process_payment') }}" method="POST">
+                        <input type="hidden" name="booking_reference" value="{{ booking_reference }}">
+                        <input type="hidden" name="flight_id" value="{{ flight.id }}">
+                        <input type="hidden" name="total_price" value="{{ flight.price }}">
+                        <!-- Add hidden fields for traveler info -->
+                        {% for traveler in travelers %}
+                        <input type="hidden" name="firstName{{ loop.index0 }}" value="{{ traveler.first_name }}">
+                        <input type="hidden" name="lastName{{ loop.index0 }}" value="{{ traveler.last_name }}">
+                        <input type="hidden" name="title{{ loop.index0 }}" value="{{ traveler.title }}">
+                        {% endfor %}
                         <div class="row g-3">
                             <div class="col-12">
                                 <label for="cardNumber" class="form-label">Card Number</label>
