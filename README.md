@@ -110,8 +110,8 @@ We welcome contributions! Fork the repo, create a branch, and submit a pull requ
 ---
 ## 🤝 Contributors
 
-Varsha
-Sivaranjini
+- Varsha
+- Sivaranjini
 
 ---
 
