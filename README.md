@@ -83,7 +83,6 @@ flightbooking/
 └── README.md               # Project documentation
 ```
 
----
 
 ## 🔐 Environment Configuration
 
@@ -96,30 +95,11 @@ SECRET_KEY=your_secret_key
 SQLALCHEMY_DATABASE_URI=sqlite:///flight_booking.db
 ```
 
----
-
-## 🖼️ Screenshots
-
-### 🏠 Home Page
-![Home Page](static/images/screenshots/home.png)
-
-### 🔍 Flight Search
-![Flight Search](static/images/screenshots/search.png)
-
-### ✈️ Booking
-![Booking](static/images/screenshots/booking.png)
-
-### 💳 Payment
-![Payment](static/images/screenshots/payment.png)
-
-### ✅ Confirmation
-![Confirmation](static/images/screenshots/confirmation.png)
-
----
+=
 
 ## 📄 License
 
-This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) file for more information.
+This project is Open Source Project
 
 ---
 
@@ -128,8 +108,14 @@ This project is licensed under the **MIT License**. See the [LICENSE](LICENSE) f
 We welcome contributions! Fork the repo, create a branch, and submit a pull request.
 
 ---
+## 🤝 Contributors
+
+Varsha
+Sivaranjini
+
+---
 
 ## 📬 Contact
 
 For questions or support, feel free to contact us at:  
-📧 [support@skywings.com](mailto:support@skywings.com)
+📧 [eoohithbala@outlook.com](roohithbala@outlook.com)
