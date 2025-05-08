@@ -118,4 +118,4 @@ Sivaranjini
 ## 📬 Contact
 
 For questions or support, feel free to contact us at:  
-📧 [eoohithbala@outlook.com](roohithbala@outlook.com)
+📧 [roohithbala@outlook.com](roohithbala@outlook.com)
