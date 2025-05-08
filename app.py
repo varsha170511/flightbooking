@@ -348,56 +348,86 @@ def payment(flight_id):
 @login_required
 def process_payment():
     try:
-        booking_reference = request.form.get('booking_reference', f"SW{random.randint(100000, 999999)}")
+        booking_reference = request.form.get('booking_reference')
         flight_id = int(request.form.get('flight_id'))
+        total_price = float(request.form.get('total_price'))
         
-        # Get the flight from database or create one if it doesn't exist (for demo)
+        # Parse departure and arrival times correctly
+        departure_str = request.form.get('departure_time', '2023-12-15 09:30')
+        arrival_str = request.form.get('arrival_time', '2023-12-15 21:15')
+        
+        try:
+            # First try to parse with existing format
+            departure_time = datetime.strptime(departure_str, '%Y-%m-%d %H:%M')
+            arrival_time = datetime.strptime(arrival_str, '%Y-%m-%d %H:%M')
+        except ValueError:
+            # If that fails, try to parse with the other format
+            departure_time = datetime.strptime(departure_str, '%B %d, %Y %H:%M')
+            arrival_time = datetime.strptime(arrival_str, '%B %d, %Y %H:%M')
+
+        # Ensure flight exists first
         flight = Flight.query.get(flight_id)
         if not flight:
             flight = Flight(
                 id=flight_id,
                 airline='SkyWings Airlines',
                 flight_number=f"SW{random.randint(100, 999)}",
-                origin='New York',
-                origin_code='NYC',
-                destination='London',
-                destination_code='LON',
-                departure_time=datetime.strptime('2023-12-15 09:30:00', '%Y-%m-%d %H:%M:%S'),
-                arrival_time=datetime.strptime('2023-12-15 21:15:00', '%Y-%m-%d %H:%M:%S'),
-                duration='7h 45m',
-                price=399.0,
+                origin=request.form.get('origin', 'New York'),
+                origin_code=request.form.get('origin_code', 'NYC'),
+                destination=request.form.get('destination', 'London'),
+                destination_code=request.form.get('destination_code', 'LON'),
+                departure_time=departure_time,
+                arrival_time=arrival_time,
+                duration=request.form.get('duration', '7h 45m'),
+                price=total_price,
                 seats_available=150
             )
             db.session.add(flight)
-        
-        # Create the booking
+            db.session.flush()
+
+        # Collect travelers data
+        travelers = []
+        i = 0
+        while True:
+            first_name = request.form.get(f'firstName{i}')
+            if not first_name:
+                break
+                
+            travelers.append({
+                'first_name': first_name,
+                'last_name': request.form.get(f'lastName{i}'),
+                'title': request.form.get(f'title{i}'),
+                'passport_number': request.form.get(f'passport{i}'),
+                'passport_expiry': request.form.get(f'passportExpiry{i}'),
+                'nationality': request.form.get(f'nationality{i}'),
+                'dob': request.form.get(f'dob{i}')
+            })
+            i += 1
+
+        # Create booking
         booking = Booking(
             user_id=current_user.id,
-            flight_id=flight_id,
+            flight_id=flight.id,
             booking_reference=booking_reference,
-            travelers=[{
-                'first_name': request.form.get('firstName0'),
-                'last_name': request.form.get('lastName0'),
-                'title': request.form.get('title0', 'Mr.'),
-            }],  # For simplicity, just storing the first traveler
-            total_price=float(request.form.get('total_price', 399.0)),
+            travelers=str(travelers),  # Convert to string for SQLite compatibility
+            total_price=total_price,
             status='confirmed'
         )
         
         # Update flight seats
-        flight.seats_available = max(0, flight.seats_available - 1)
+        flight.seats_available = max(0, flight.seats_available - len(travelers))
         
-        # Save to database
+        # Save everything
         db.session.add(booking)
         db.session.commit()
         
-        flash('Payment processed successfully!', 'success')
+        flash('Booking confirmed successfully!', 'success')
         return redirect(url_for('confirmation', booking_reference=booking_reference))
         
     except Exception as e:
         db.session.rollback()
         app.logger.error(f"Payment processing error: {str(e)}")
-        flash('An error occurred while processing payment. Please try again.', 'danger')
+        flash(f'An error occurred: {str(e)}', 'danger')
         return redirect(url_for('payment', flight_id=flight_id))
 
 @app.route('/confirmation')

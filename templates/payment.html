@@ -43,11 +43,22 @@
                         <input type="hidden" name="booking_reference" value="{{ booking_reference }}">
                         <input type="hidden" name="flight_id" value="{{ flight.id }}">
                         <input type="hidden" name="total_price" value="{{ flight.price }}">
+                        <input type="hidden" name="origin" value="{{ flight.origin }}">
+                        <input type="hidden" name="origin_code" value="{{ flight.origin_code }}">
+                        <input type="hidden" name="destination" value="{{ flight.destination }}">
+                        <input type="hidden" name="destination_code" value="{{ flight.destination_code }}">
+                        <input type="hidden" name="departure_time" value="{{ flight.departure_date }} {{ flight.departure_time }}">
+                        <input type="hidden" name="arrival_time" value="{{ flight.departure_date }} {{ flight.arrival_time }}">
+                        <input type="hidden" name="duration" value="{{ flight.duration }}">
                         <!-- Add hidden fields for traveler info -->
                         {% for traveler in travelers %}
                         <input type="hidden" name="firstName{{ loop.index0 }}" value="{{ traveler.first_name }}">
                         <input type="hidden" name="lastName{{ loop.index0 }}" value="{{ traveler.last_name }}">
                         <input type="hidden" name="title{{ loop.index0 }}" value="{{ traveler.title }}">
+                        <input type="hidden" name="passport{{ loop.index0 }}" value="{{ traveler.passport_number|default('') }}">
+                        <input type="hidden" name="passportExpiry{{ loop.index0 }}" value="{{ traveler.passport_expiry|default('') }}">
+                        <input type="hidden" name="nationality{{ loop.index0 }}" value="{{ traveler.nationality|default('') }}">
+                        <input type="hidden" name="dob{{ loop.index0 }}" value="{{ traveler.dob|default('') }}">
                         {% endfor %}
                         <div class="row g-3">
                             <div class="col-12">

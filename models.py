@@ -40,8 +40,19 @@ class Flight(db.Model):
 
 class Booking(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.Integer, db.ForeignKey('user.id'), nullable=False)
-    flight_id = db.Column(db.Integer, db.ForeignKey('flight.id'), nullable=False)
-    booking_date = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+    user_id = db.Column(db.Integer, db.ForeignKey('user.id'))
+    flight_id = db.Column(db.Integer, db.ForeignKey('flight.id'))
+    booking_reference = db.Column(db.String(20), unique=True)
+    travelers = db.Column(db.Text)  # Changed from JSON to Text for SQLite compatibility
+    total_price = db.Column(db.Float)
     status = db.Column(db.String(20), default='confirmed')
-    flight = db.relationship('Flight', backref='bookings')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    @property
+    def travelers_list(self):
+        """Convert stored string back to list of dictionaries"""
+        import ast
+        try:
+            return ast.literal_eval(self.travelers) if self.travelers else []
+        except:
+            return []
